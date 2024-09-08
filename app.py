@@ -1,5 +1,14 @@
 # Import the dependencies.
+import numpy as np
+import flask 
+print(flask.__version__)
+import sqlalchemy
+print(sqlalchemy.__version__)
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, func
 
+from flask import Flask, jsonify
 
 
 #################################################
