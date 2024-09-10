@@ -5,6 +5,7 @@ print(flask.__version__)
 import sqlalchemy
 print(sqlalchemy.__version__)
 import datetime as dt
+import pandas as pd
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
@@ -61,4 +62,27 @@ def percipitation():
     one_year_ago = dt.datetime.strptime(most_recent_date, '%Y-%m-%d') - dt.timedelta(days=365)
 
     # Perform a query to retrieve the data and precipitation scores
-    results = session.query(measurements.date, measurements.prcp).filter(measurements.date >= one_year_ago).all()
+    results_rain = session.query(measurements.date, measurements.prcp).filter(measurements.date >= one_year_ago).all()
+
+    # Save the query results as a Pandas DataFrame. Explicitly set the column names
+    measurements_df = pd.DataFrame(results_rain, columns=['Date', 'Precipitation'])
+
+    # Set the 'Date' column as the index
+    measurements_df.set_index('Date', inplace=True)
+
+    # Sort the dataframe by date
+    measurements_df = measurements_df.sort_index()
+    
+    # closing session
+    session.close()
+
+    # converting to normal list for JSON
+    rain_fall = list(np.ravel(results_rain))
+
+    # creating JSON
+    return jsonify(rain_fall)
+
+
+
+# @app.route("/api/v1.0/stations")
+# def station():
